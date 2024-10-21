@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import MovieCard from "../components/MovieCard";
 import { useMovies } from "@/hooks/useMovies";
+import useLocalStorageState from "use-local-storage-state";
 
 // Styled components
 const Input = styled.input`
@@ -40,10 +41,39 @@ const CenteredContainer = styled.div`
   padding: 1rem;
 `;
 
+const WatchlistButton = styled.button`
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: ${(props) => (props.inWatchlist ? "#ff6347" : "#4682b4")};
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+`;
+
 export default function HomePage() {
   const [input, setInput] = useState("");
   const { moviesData, imdbIds, netzkinoError, loading } = useMovies(input);
   console.log(moviesData);
+
+  const [watchlist, setWatchlist] = useLocalStorageState("watchlist", {
+    defaultValue: [],
+  });
+
+  function toggleWatchlist(imdbId) {
+    setWatchlist((currentWatchlist) => {
+      if (currentWatchlist.includes(imdbId)) {
+        return currentWatchlist.filter((id) => id !== imdbId);
+      } else {
+        return [...currentWatchlist, imdbId];
+      }
+    });
+  }
+
+  function inWatchlist(imdbId) {
+    return watchlist.includes(imdbId);
+  }
+
   // Render states
   if (loading) return <div>Loading data...</div>;
   if (netzkinoError) return <div>Error loading data!</div>;
@@ -59,7 +89,17 @@ export default function HomePage() {
       <MovieGrid role="grid">
         {imdbIds.map((imdbId) =>
           moviesData[imdbId] ? (
-            <MovieCard key={imdbId} movie={moviesData[imdbId]} />
+            <div key={imdbId}>
+              <MovieCard key={imdbId} movie={moviesData[imdbId]} />
+              <WatchlistButton
+                inWatchlist={inWatchlist(imdbId)}
+                onClick={() => toggleWatchlist(imdbId)}
+              >
+                {inWatchlist(imdbId)
+                  ? "Von Watchlist entfernen"
+                  : "Zu Watchlist hinzufügen"}
+              </WatchlistButton>
+            </div>
           ) : (
             <p key={imdbId}>Loading data for IMDb ID: {imdbId}...</p>
           )
