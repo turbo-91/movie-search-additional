@@ -73,42 +73,32 @@ export default function HomePage() {
         {imdbIds.map((imdbId) =>
           moviesData[imdbId] ? (
             <div key={imdbId}>
-              <MovieCard key={imdbId} movie={moviesData[imdbId]} />
-              <WatchlistButton
-                isInWatchlist={inWatchlist(imdbId)} // Changed prop name here
-                onClick={() => toggleWatchlist(imdbId)}
-              >
-                {inWatchlist(imdbId)
-                  ? "Von Watchlist entfernen"
-                  : "Zu Watchlist hinzufügen"}
-              </WatchlistButton>
+              <MovieCard
+                movie={moviesData[imdbId]}
+                isInWatchlist={inWatchlist(imdbId)}
+                toggleWatchlist={() => toggleWatchlist(imdbId)}
+              />
             </div>
           ) : (
             <p key={imdbId}>Loading data for IMDb ID: {imdbId}...</p>
           )
         )}
       </MovieGrid>
+
       <h2>Your Watchlist</h2>
       <div id="watchlist-section">
         {watchlist.length === 0 ? (
           <p>Deine Watchlist ist leer</p>
         ) : (
           <MovieGrid>
-            {watchlist.length === 0 ? (
-              <p>Deine Watchlist ist leer</p>
-            ) : (
-              watchlist.map((movie) => (
-                <div key={`watchlist-${movie.imdbId}`}>
-                  <MovieCard key={`watchlist-${movie.imdbId}`} movie={movie} />
-                  <WatchlistButton
-                    isInWatchlist={true} // Always true for watchlist items
-                    onClick={() => toggleWatchlist(movie.imdbId)}
-                  >
-                    Von Watchlist entfernen
-                  </WatchlistButton>
-                </div>
-              ))
-            )}
+            {watchlist.map((movie) => (
+              <MovieCard
+                key={`watchlist-${movie.imdbId}`}
+                movie={movie}
+                isInWatchlist={true} // Always true for watchlist items
+                toggleWatchlist={() => toggleWatchlist(movie.imdbId)}
+              />
+            ))}
           </MovieGrid>
         )}
       </div>

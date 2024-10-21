@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-// Styled component for the movie card container
 const Box = styled.div`
   max-width: 500px;
   margin-bottom: 1rem;
@@ -24,7 +23,6 @@ const Box = styled.div`
   }
 `;
 
-// Styled component for the movie title
 const Title = styled.h3`
   font-family: "Helvetica", sans-serif;
   text-align: left;
@@ -37,7 +35,6 @@ const Title = styled.h3`
   }
 `;
 
-// Styled component for the image
 const PosterImage = styled.img`
   width: 100%;
   height: auto;
@@ -57,7 +54,17 @@ const PosterImage = styled.img`
   }
 `;
 
-const MovieCard = ({ movie }) => {
+const WatchlistButton = styled.button`
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: ${(props) => (props.isInWatchlist ? "#ff6347" : "#4682b4")};
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+`;
+
+const MovieCard = ({ movie, isInWatchlist, toggleWatchlist }) => {
   const movieTitle = movie?.title || "Unknown";
   const posterUrl = movie?.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
@@ -67,6 +74,9 @@ const MovieCard = ({ movie }) => {
     <Box role="article">
       <Title>{movieTitle}</Title>
       <PosterImage src={posterUrl} alt={movieTitle} />
+      <WatchlistButton isInWatchlist={isInWatchlist} onClick={toggleWatchlist}>
+        {isInWatchlist ? "Von Watchlist entfernen" : "Zu Watchlist hinzufügen"}
+      </WatchlistButton>
     </Box>
   );
 };
