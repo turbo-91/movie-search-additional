@@ -61,17 +61,37 @@ export default function HomePage() {
   });
 
   function toggleWatchlist(imdbId) {
+    const movie = moviesData[imdbId];
+
     setWatchlist((currentWatchlist) => {
-      if (currentWatchlist.includes(imdbId)) {
-        return currentWatchlist.filter((id) => id !== imdbId);
-      } else {
-        return [...currentWatchlist, imdbId];
+      const isMovieInWatchlist = currentWatchlist.some(
+        (item) => item.imdbId === imdbId
+      );
+
+      // If the movie is in the watchlist, remove it
+      if (isMovieInWatchlist) {
+        return currentWatchlist.filter((item) => item.imdbId !== imdbId);
       }
+
+      // If the movie doesn't exist in moviesData, just return the current list
+      if (!movie) {
+        console.warn(`Movie with IMDb ID ${imdbId} not found in moviesData.`);
+        return currentWatchlist;
+      }
+
+      // Otherwise, add the movie to the watchlist
+      const movieDetails = {
+        imdbId: imdbId,
+        title: movie.title,
+        poster_path: movie.poster_path,
+      };
+
+      return [...currentWatchlist, movieDetails];
     });
   }
 
   function inWatchlist(imdbId) {
-    return watchlist.includes(imdbId);
+    return watchlist.some((item) => item.imdbId === imdbId);
   }
 
   // Render states
@@ -108,18 +128,23 @@ export default function HomePage() {
       <h2>Your Watchlist</h2>
       <div id="watchlist-section">
         {watchlist.length === 0 ? (
-          <p>Your watchlist is empty</p>
+          <p>Deine Watchlist ist leer</p>
         ) : (
           <MovieGrid>
-            {watchlist.map((imdbId) =>
-              moviesData[imdbId] ? (
-                <MovieCard
-                  key={`watchlist-${imdbId}`}
-                  movie={moviesData[imdbId]}
-                />
-              ) : (
-                <p key={imdbId}>Loading data for IMDb ID: {imdbId}...</p>
-              )
+            {watchlist.length === 0 ? (
+              <p>Deine Watchlist ist leer</p>
+            ) : (
+              watchlist.map((movie) => (
+                <div key={`watchlist-${movie.imdbId}`}>
+                  <MovieCard key={`watchlist-${movie.imdbId}`} movie={movie} />
+                  <WatchlistButton
+                    isInWatchlist={true} // Always true for watchlist items
+                    onClick={() => toggleWatchlist(movie.imdbId)}
+                  >
+                    Von Watchlist entfernen
+                  </WatchlistButton>
+                </div>
+              ))
             )}
           </MovieGrid>
         )}
