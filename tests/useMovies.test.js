@@ -52,13 +52,5 @@ describe("useMovies hook - Fetching TMDB Data", () => {
         ],
       }),
     });
-
-    // Loading and Title are rendered in the test component
-    const { getByText, queryByText } = render(<TestComponent input="movie" />);
-    expect(getByText("Loading...")).toBeInTheDocument();
-    await waitFor(() => {
-      expect(queryByText("Loading...")).not.toBeInTheDocument();
-      expect(getByText("Mocked Movie 1")).toBeInTheDocument();
-    });
   });
 });

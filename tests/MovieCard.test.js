@@ -1,18 +1,22 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect";
-import MovieCard from "@/components/MovieCard.js";
+import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect"; // for better matchers
+import MovieCard from "@/components/MovieCard";
 
-const mockMovie = [
-  {
-    title: "Test Movie",
-    poster_path: "/testposter.jpg",
-  },
-];
+const mockMovie = {
+  title: "Test Movie",
+  poster_path: "/testposter.jpg",
+};
 
 describe("MovieCard - Static Elements", () => {
   test("renders the movie card container (Box)", () => {
-    render(<MovieCard movie={mockMovie} />);
+    render(
+      <MovieCard
+        movie={mockMovie}
+        isInWatchlist={false}
+        toggleWatchlist={jest.fn()}
+      />
+    );
 
     const boxElement = screen.getByRole("article");
     expect(boxElement).toBeInTheDocument();
@@ -26,7 +30,13 @@ describe("MovieCard - Static Elements", () => {
   });
 
   test("renders the movie title", () => {
-    render(<MovieCard movie={mockMovie} />);
+    render(
+      <MovieCard
+        movie={mockMovie}
+        isInWatchlist={false}
+        toggleWatchlist={jest.fn()}
+      />
+    );
 
     const titleElement = screen.getByText("Test Movie");
     expect(titleElement).toBeInTheDocument();
@@ -38,7 +48,13 @@ describe("MovieCard - Static Elements", () => {
   });
 
   test("renders the poster image", () => {
-    render(<MovieCard movie={mockMovie} />);
+    render(
+      <MovieCard
+        movie={mockMovie}
+        isInWatchlist={false}
+        toggleWatchlist={jest.fn()}
+      />
+    );
 
     const posterImageElement = screen.getByRole("img");
     expect(posterImageElement).toBeInTheDocument();
@@ -47,5 +63,61 @@ describe("MovieCard - Static Elements", () => {
       height: auto;
       border-radius: 8px;
     `);
+  });
+});
+
+describe("MovieCard - Watchlist Button", () => {
+  test("renders the watchlist button with 'Zu Watchlist hinzufügen' text when not in watchlist", () => {
+    render(
+      <MovieCard
+        movie={mockMovie}
+        isInWatchlist={false}
+        toggleWatchlist={jest.fn()}
+      />
+    );
+
+    const buttonElement = screen.getByText("Zu Watchlist hinzufügen");
+    expect(buttonElement).toBeInTheDocument();
+    expect(buttonElement).toHaveStyle(`
+      background-color: #4682b4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    `);
+  });
+
+  test("renders the watchlist button with 'Von Watchlist entfernen' text when in watchlist", () => {
+    render(
+      <MovieCard
+        movie={mockMovie}
+        isInWatchlist={true}
+        toggleWatchlist={jest.fn()}
+      />
+    );
+
+    const buttonElement = screen.getByText("Von Watchlist entfernen");
+    expect(buttonElement).toBeInTheDocument();
+    expect(buttonElement).toHaveStyle(`
+      background-color: #ff6347;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    `);
+  });
+
+  test("calls toggleWatchlist function when button is clicked", () => {
+    const toggleWatchlistMock = jest.fn();
+    render(
+      <MovieCard
+        movie={mockMovie}
+        isInWatchlist={false}
+        toggleWatchlist={toggleWatchlistMock}
+      />
+    );
+
+    const buttonElement = screen.getByText("Zu Watchlist hinzufügen");
+    fireEvent.click(buttonElement);
+
+    expect(toggleWatchlistMock).toHaveBeenCalledTimes(1);
   });
 });
