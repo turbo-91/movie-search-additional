@@ -50,7 +50,7 @@ export function useMovies(input) {
     }
   }, [netzkinoData]);
 
-  // Data fetching for TMDB
+  // SWR data fetching for TMDB
   const { data: tmdbData, error: tmdbError } = useSWR(
     imdbIds.length > 0
       ? imdbIds.map(
@@ -61,14 +61,14 @@ export function useMovies(input) {
     (urls) => Promise.all(urls.map(fetcher))
   );
 
-  // Set moviesData when TMDB data is available
+  // Set moviesData when TMDB data is available, extracting only title and poster_path
   useEffect(() => {
     if (tmdbData && imdbIds.length > 0) {
       const movieDataById = {};
       imdbIds.forEach((id, index) => {
         const movieResults = tmdbData[index].movie_results;
         if (movieResults && movieResults.length > 0) {
-          // Extract only the title and poster_path for more efficiency
+          // Extract only the title and poster_path
           movieDataById[id] = movieResults.map((movie) => ({
             title: movie.title,
             poster_path: movie.poster_path,

@@ -58,9 +58,10 @@ const PosterImage = styled.img`
 `;
 
 const MovieCard = ({ movie }) => {
-  const movieTitle = movie?.movie_results?.[0]?.title || "Unknown";
-  const posterUrl = movie?.movie_results?.[0]?.poster_path
-    ? `https://image.tmdb.org/t/p/w500${movie.movie_results[0].poster_path}`
+  const movieData = movie[0];
+  const movieTitle = movieData?.title || "Unknown";
+  const posterUrl = movieData?.poster_path
+    ? `https://image.tmdb.org/t/p/w500${movieData.poster_path}`
     : "No overview available";
 
   return (
