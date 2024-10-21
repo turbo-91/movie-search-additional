@@ -58,11 +58,10 @@ const PosterImage = styled.img`
 `;
 
 const MovieCard = ({ movie }) => {
-  const movieData = movie[0];
-  const movieTitle = movieData?.title || "Unknown";
-  const posterUrl = movieData?.poster_path
-    ? `https://image.tmdb.org/t/p/w500${movieData.poster_path}`
-    : "No overview available";
+  const movieTitle = movie?.title || "Unknown";
+  const posterUrl = movie?.poster_path
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    : "Kein Poster verfügbar";
 
   return (
     <Box role="article">

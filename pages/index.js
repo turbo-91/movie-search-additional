@@ -43,6 +43,7 @@ const CenteredContainer = styled.div`
 export default function HomePage() {
   const [input, setInput] = useState("");
   const { moviesData, imdbIds, netzkinoError, loading } = useMovies(input);
+  console.log(moviesData);
   // Render states
   if (loading) return <div>Loading data...</div>;
   if (netzkinoError) return <div>Error loading data!</div>;
