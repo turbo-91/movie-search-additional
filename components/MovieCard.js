@@ -57,7 +57,8 @@ const PosterImage = styled.img`
 const WatchlistButton = styled.button`
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  background-color: ${(props) => (props.isInWatchlist ? "#ff6347" : "#4682b4")};
+  background-color: ${(props) =>
+    props.$isInWatchlist ? "#ff6347" : "#4682b4"};
   color: white;
   border: none;
   border-radius: 4px;
@@ -74,7 +75,7 @@ const MovieCard = ({ movie, isInWatchlist, toggleWatchlist }) => {
     <Box role="article">
       <Title>{movieTitle}</Title>
       <PosterImage src={posterUrl} alt={movieTitle} />
-      <WatchlistButton isInWatchlist={isInWatchlist} onClick={toggleWatchlist}>
+      <WatchlistButton $isInWatchlist={isInWatchlist} onClick={toggleWatchlist}>
         {isInWatchlist ? "Von Watchlist entfernen" : "Zu Watchlist hinzufügen"}
       </WatchlistButton>
     </Box>
