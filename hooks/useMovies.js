@@ -50,35 +50,35 @@ export function useMovies(input) {
     }
   }, [netzkinoData]);
 
-  // Fetch movies data from TMDB using IMDb IDs
-  useEffect(() => {
-    if (imdbIds.length > 0) {
-      const fetchMovieData = async () => {
-        const requests = imdbIds.map((id) =>
-          fetch(
+  // SWR data fetching for TMDB
+  const { data: tmdbData, error: tmdbError } = useSWR(
+    imdbIds.length > 0
+      ? imdbIds.map(
+          (id) =>
             `https://api.themoviedb.org/3/find/${id}?api_key=78247849b9888da02ffb1655caa3a9b9&language=de&external_source=imdb_id`
-          ).then((res) => res.json())
-        );
+        )
+      : null,
+    (urls) => Promise.all(urls.map(fetcher))
+  );
 
-        const results = await Promise.all(requests);
-
-        // Create the movieDataById object using forEach instead of reduce
-        const movieDataById = {};
-        imdbIds.forEach((id, index) => {
-          movieDataById[id] = results[index]; // Assign results to each IMDb ID
-        });
-
-        setMoviesData(movieDataById); // Set the state with the new movie data object
-      };
-
-      fetchMovieData();
+  // Set moviesData when TMDB data is available
+  useEffect(() => {
+    if (tmdbData && imdbIds.length > 0) {
+      const movieDataById = {};
+      imdbIds.forEach((id, index) => {
+        movieDataById[id] = tmdbData[index]; // Assign results to each IMDb ID
+      });
+      setMoviesData(movieDataById);
     }
-  }, [imdbIds]);
+  }, [tmdbData, imdbIds]);
 
   return {
     moviesData,
     imdbIds,
     netzkinoError,
-    loading: !netzkinoData && debouncedInput && !netzkinoError,
+    tmdbError,
+    loading:
+      (!netzkinoData && debouncedInput && !netzkinoError) ||
+      (!tmdbData && imdbIds.length > 0 && !tmdbError),
   };
 }
