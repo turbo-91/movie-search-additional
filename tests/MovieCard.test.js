@@ -1,16 +1,14 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect"; // for better matchers
+import "@testing-library/jest-dom/extend-expect";
 import MovieCard from "@/components/MovieCard.js";
 
-const mockMovie = {
-  movie_results: [
-    {
-      title: "Test Movie",
-      poster_path: "/testposter.jpg",
-    },
-  ],
-};
+const mockMovie = [
+  {
+    title: "Test Movie",
+    poster_path: "/testposter.jpg",
+  },
+];
 
 describe("MovieCard - Static Elements", () => {
   test("renders the movie card container (Box)", () => {

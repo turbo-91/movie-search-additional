@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect"; // for better matchers
-import HomePage from "@/pages/Homepage";
+import HomePage from "@/pages";
 
 jest.mock("../components/MovieCard", () => () => <div>Mocked MovieCard</div>);
 
