@@ -16,7 +16,7 @@ export function useMovies(input) {
   const [moviesData, setMoviesData] = useState({});
   const [imdbIds, setImdbIds] = useState([]);
 
-  // SWR data fetching
+  // Data Fetching Netzkino
   const { data: netzkinoData, error: netzkinoError } = useSWR(
     debouncedInput
       ? `https://api.netzkino.de.simplecache.net/capi-2.0a/search?q=${debouncedInput
@@ -34,7 +34,7 @@ export function useMovies(input) {
     }
   }, [debouncedInput]);
 
-  // Extract IMDb IDs when data is fetched
+  // Extract IMDb IDs when NetzkinoData is fetched
   useEffect(() => {
     if (netzkinoData) {
       const imdbLinks = netzkinoData.posts
@@ -50,7 +50,7 @@ export function useMovies(input) {
     }
   }, [netzkinoData]);
 
-  // SWR data fetching for TMDB
+  // Data fetching for TMDB
   const { data: tmdbData, error: tmdbError } = useSWR(
     imdbIds.length > 0
       ? imdbIds.map(
@@ -66,7 +66,14 @@ export function useMovies(input) {
     if (tmdbData && imdbIds.length > 0) {
       const movieDataById = {};
       imdbIds.forEach((id, index) => {
-        movieDataById[id] = tmdbData[index]; // Assign results to each IMDb ID
+        const movieResults = tmdbData[index].movie_results;
+        if (movieResults && movieResults.length > 0) {
+          // Extract only the title and poster_path for more efficiency
+          movieDataById[id] = movieResults.map((movie) => ({
+            title: movie.title,
+            poster_path: movie.poster_path,
+          }));
+        }
       });
       setMoviesData(movieDataById);
     }
