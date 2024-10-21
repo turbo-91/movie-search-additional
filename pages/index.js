@@ -3,6 +3,7 @@ import styled from "styled-components";
 import MovieCard from "../components/MovieCard";
 import { useMovies } from "@/hooks/useMovies";
 import useLocalStorageState from "use-local-storage-state";
+import { useWatchlist } from "@/hooks/useWatchlist";
 
 // Styled components
 const Input = styled.input`
@@ -54,45 +55,7 @@ const WatchlistButton = styled.button`
 export default function HomePage() {
   const [input, setInput] = useState("");
   const { moviesData, imdbIds, netzkinoError, loading } = useMovies(input);
-  console.log(moviesData);
-
-  const [watchlist, setWatchlist] = useLocalStorageState("watchlist", {
-    defaultValue: [],
-  });
-
-  function toggleWatchlist(imdbId) {
-    const movie = moviesData[imdbId];
-
-    setWatchlist((currentWatchlist) => {
-      const isMovieInWatchlist = currentWatchlist.some(
-        (item) => item.imdbId === imdbId
-      );
-
-      // If the movie is in the watchlist, remove it
-      if (isMovieInWatchlist) {
-        return currentWatchlist.filter((item) => item.imdbId !== imdbId);
-      }
-
-      // If the movie doesn't exist in moviesData, just return the current list
-      if (!movie) {
-        console.warn(`Movie with IMDb ID ${imdbId} not found in moviesData.`);
-        return currentWatchlist;
-      }
-
-      // Otherwise, add the movie to the watchlist
-      const movieDetails = {
-        imdbId: imdbId,
-        title: movie.title,
-        poster_path: movie.poster_path,
-      };
-
-      return [...currentWatchlist, movieDetails];
-    });
-  }
-
-  function inWatchlist(imdbId) {
-    return watchlist.some((item) => item.imdbId === imdbId);
-  }
+  const { watchlist, toggleWatchlist, inWatchlist } = useWatchlist(moviesData);
 
   // Render states
   if (loading) return <div>Loading data...</div>;
