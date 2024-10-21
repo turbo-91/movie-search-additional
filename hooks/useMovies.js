@@ -16,7 +16,7 @@ export function useMovies(input) {
   const [moviesData, setMoviesData] = useState({});
   const [imdbIds, setImdbIds] = useState([]);
 
-  // SWR data fetching
+  // Data Fetching Netzkino
   const { data: netzkinoData, error: netzkinoError } = useSWR(
     debouncedInput
       ? `https://api.netzkino.de.simplecache.net/capi-2.0a/search?q=${debouncedInput
@@ -34,7 +34,7 @@ export function useMovies(input) {
     }
   }, [debouncedInput]);
 
-  // Extract IMDb IDs when data is fetched
+  // Extract IMDb IDs when NetzkinoData is fetched
   useEffect(() => {
     if (netzkinoData) {
       const imdbLinks = netzkinoData.posts
@@ -50,35 +50,42 @@ export function useMovies(input) {
     }
   }, [netzkinoData]);
 
-  // Fetch movies data from TMDB using IMDb IDs
-  useEffect(() => {
-    if (imdbIds.length > 0) {
-      const fetchMovieData = async () => {
-        const requests = imdbIds.map((id) =>
-          fetch(
+  // Data fetching for TMDB
+  const { data: tmdbData, error: tmdbError } = useSWR(
+    imdbIds.length > 0
+      ? imdbIds.map(
+          (id) =>
             `https://api.themoviedb.org/3/find/${id}?api_key=78247849b9888da02ffb1655caa3a9b9&language=de&external_source=imdb_id`
-          ).then((res) => res.json())
-        );
+        )
+      : null,
+    (urls) => Promise.all(urls.map(fetcher))
+  );
 
-        const results = await Promise.all(requests);
-
-        // Create the movieDataById object using forEach instead of reduce
-        const movieDataById = {};
-        imdbIds.forEach((id, index) => {
-          movieDataById[id] = results[index]; // Assign results to each IMDb ID
-        });
-
-        setMoviesData(movieDataById); // Set the state with the new movie data object
-      };
-
-      fetchMovieData();
+  // Set moviesData when TMDB data is available
+  useEffect(() => {
+    if (tmdbData && imdbIds.length > 0) {
+      const movieDataById = {};
+      imdbIds.forEach((id, index) => {
+        const movieResults = tmdbData[index].movie_results;
+        if (movieResults && movieResults.length > 0) {
+          // Extract only the title and poster_path for more efficiency
+          movieDataById[id] = movieResults.map((movie) => ({
+            title: movie.title,
+            poster_path: movie.poster_path,
+          }));
+        }
+      });
+      setMoviesData(movieDataById);
     }
-  }, [imdbIds]);
+  }, [tmdbData, imdbIds]);
 
   return {
     moviesData,
     imdbIds,
     netzkinoError,
-    loading: !netzkinoData && debouncedInput && !netzkinoError,
+    tmdbError,
+    loading:
+      (!netzkinoData && debouncedInput && !netzkinoError) ||
+      (!tmdbData && imdbIds.length > 0 && !tmdbError),
   };
 }

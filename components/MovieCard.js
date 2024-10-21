@@ -57,7 +57,7 @@ const PosterImage = styled.img`
   }
 `;
 
-const MovieCard = ({ movie, onAction, actionLabel }) => {
+const MovieCard = ({ movie }) => {
   const movieTitle = movie?.movie_results?.[0]?.title || "Unknown";
   const posterUrl = movie?.movie_results?.[0]?.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.movie_results[0].poster_path}`
