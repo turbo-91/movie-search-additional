@@ -44,7 +44,7 @@ const CenteredContainer = styled.div`
 const WatchlistButton = styled.button`
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  background-color: ${(props) => (props.inWatchlist ? "#ff6347" : "#4682b4")};
+  background-color: ${(props) => (props.isInWatchlist ? "#ff6347" : "#4682b4")};
   color: white;
   border: none;
   border-radius: 4px;
@@ -92,7 +92,7 @@ export default function HomePage() {
             <div key={imdbId}>
               <MovieCard key={imdbId} movie={moviesData[imdbId]} />
               <WatchlistButton
-                inWatchlist={inWatchlist(imdbId)}
+                isInWatchlist={inWatchlist(imdbId)} // Changed prop name here
                 onClick={() => toggleWatchlist(imdbId)}
               >
                 {inWatchlist(imdbId)
@@ -105,6 +105,25 @@ export default function HomePage() {
           )
         )}
       </MovieGrid>
+      <h2>Your Watchlist</h2>
+      <div id="watchlist-section">
+        {watchlist.length === 0 ? (
+          <p>Your watchlist is empty</p>
+        ) : (
+          <MovieGrid>
+            {watchlist.map((imdbId) =>
+              moviesData[imdbId] ? (
+                <MovieCard
+                  key={`watchlist-${imdbId}`}
+                  movie={moviesData[imdbId]}
+                />
+              ) : (
+                <p key={imdbId}>Loading data for IMDb ID: {imdbId}...</p>
+              )
+            )}
+          </MovieGrid>
+        )}
+      </div>
     </CenteredContainer>
   );
 }
