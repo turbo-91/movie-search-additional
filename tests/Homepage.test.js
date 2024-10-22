@@ -130,7 +130,9 @@ describe("HomePage component with mocked useMovies and useWatchlist", () => {
 
     render(<HomePage />);
 
-    expect(screen.getByText(/Deine Watchlist ist leer/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Füge Filme zu deiner Watchlist hinzu/i)
+    ).toBeInTheDocument();
   });
 
   test("renders movies in watchlist section", () => {
