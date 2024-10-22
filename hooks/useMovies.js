@@ -26,7 +26,7 @@ export function useMovies(input) {
     fetcher
   );
 
-  // Handle input clearing by resetting states when input is empty
+  // Edge Case: Handle input clearing
   useEffect(() => {
     if (debouncedInput === "") {
       setImdbIds([]);
@@ -61,18 +61,18 @@ export function useMovies(input) {
     (urls) => Promise.all(urls.map(fetcher))
   );
 
-  // Set moviesData when TMDB data is available, extracting only title and poster_path
+  // Set moviesData when TMDB data is available
   useEffect(() => {
     if (tmdbData && imdbIds.length > 0) {
       const movieDataById = {};
       imdbIds.forEach((id, index) => {
         const movieResults = tmdbData[index].movie_results;
         if (movieResults && movieResults.length > 0) {
-          // Extract only the title and poster_path
-          movieDataById[id] = movieResults.map((movie) => ({
-            title: movie.title,
-            poster_path: movie.poster_path,
-          }));
+          // Extract only the title and poster_path for the first result
+          movieDataById[id] = {
+            title: movieResults[0].title,
+            poster_path: movieResults[0].poster_path,
+          };
         }
       });
       setMoviesData(movieDataById);
