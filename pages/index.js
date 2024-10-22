@@ -3,6 +3,7 @@ import styled from "styled-components";
 import MovieCard from "../components/MovieCard";
 import { useMovies } from "@/hooks/useMovies";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import Head from "next/head";
 
 // Styled components
 const Input = styled.input`
@@ -15,22 +16,58 @@ const Input = styled.input`
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   line-height: 1.5;
   font-size: 1rem;
+`;
 
-  @media (min-width: 768px) {
-    font-size: 1.2rem;
+const LayoutGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
   }
+`;
+
+const MovieGridContainer = styled.div`
+  max-width: calc(3 * 260px);
+  margin: 0 auto;
 `;
 
 const MovieGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   width: 100%;
-  max-width: 1200px;
   margin: 2rem auto;
+  & > div {
+    padding: 0.1rem;
+  }
 
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(200px, 1fr)
+    ); // Adjust to smaller screens
+  }
+`;
+
+const WatchlistContainer = styled.div`
+  padding: 1rem;
+
+  height: fit-content;
+`;
+
+const WatchlistGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr; 
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+  & > div {
+    transform: scale(0.9); /
   }
 `;
 
@@ -39,6 +76,20 @@ const CenteredContainer = styled.div`
   max-width: 1200px;
   margin: auto;
   padding: 1rem;
+`;
+
+const Headline = styled.h2`
+  font-family: Helvetica, sans-serif;
+  font-size: 1.5rem;
+  text-align: left;
+  margin-bottom: 1rem;
+`;
+
+const StyledParagraph = styled.p`
+  font-family: Helvetica, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #333;
 `;
 
 export default function HomePage() {
@@ -58,39 +109,48 @@ export default function HomePage() {
         placeholder="Suchbegriff eingeben..."
         data-testid="search-input"
       />
-      <MovieGrid role="grid">
-        {imdbIds.map((imdbId) =>
-          moviesData[imdbId] ? (
-            <div key={imdbId}>
-              <MovieCard
-                movie={moviesData[imdbId]}
-                isInWatchlist={inWatchlist(imdbId)}
-                toggleWatchlist={() => toggleWatchlist(imdbId)}
-              />
-            </div>
+      <LayoutGrid>
+        <WatchlistContainer>
+          <Headline>Deine Watchlist</Headline>
+          {watchlist.length === 0 ? (
+            <StyledParagraph>
+              Füge Filme zu deiner Watchlist hinzu
+            </StyledParagraph>
           ) : (
-            <p key={imdbId}>Loading data for IMDb ID: {imdbId}...</p>
-          )
-        )}
-      </MovieGrid>
-
-      <h2>Your Watchlist</h2>
-      <div id="watchlist-section">
-        {watchlist.length === 0 ? (
-          <p>Deine Watchlist ist leer</p>
-        ) : (
-          <MovieGrid>
-            {watchlist.map((movie) => (
-              <MovieCard
-                key={`watchlist-${movie.imdbId}`}
-                movie={movie}
-                isInWatchlist={true}
-                toggleWatchlist={() => toggleWatchlist(movie.imdbId)}
-              />
-            ))}
+            <WatchlistGrid>
+              {watchlist.map((movie) => (
+                <MovieCard
+                  key={`watchlist-${movie.imdbId}`}
+                  movie={movie}
+                  isInWatchlist={true}
+                  toggleWatchlist={() => toggleWatchlist(movie.imdbId)}
+                />
+              ))}
+            </WatchlistGrid>
+          )}
+        </WatchlistContainer>
+        <MovieGridContainer>
+          <MovieGrid role="grid">
+            {imdbIds.length === 0 ? (
+              <StyledParagraph>Jetzt nach Filmen suchen</StyledParagraph>
+            ) : (
+              imdbIds.map((imdbId) =>
+                moviesData[imdbId] ? (
+                  <div key={imdbId}>
+                    <MovieCard
+                      movie={moviesData[imdbId]}
+                      isInWatchlist={inWatchlist(imdbId)}
+                      toggleWatchlist={() => toggleWatchlist(imdbId)}
+                    />
+                  </div>
+                ) : (
+                  <p key={imdbId}>Loading data for IMDb ID: {imdbId}...</p>
+                )
+              )
+            )}
           </MovieGrid>
-        )}
-      </div>
+        </MovieGridContainer>
+      </LayoutGrid>
     </CenteredContainer>
   );
 }
