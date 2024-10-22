@@ -26,7 +26,7 @@ export function useMovies(input) {
     fetcher
   );
 
-  // Handle input clearing by resetting states when input is empty
+  // Edge Case: Handle input clearing
   useEffect(() => {
     if (debouncedInput === "") {
       setImdbIds([]);
@@ -61,7 +61,7 @@ export function useMovies(input) {
     (urls) => Promise.all(urls.map(fetcher))
   );
 
-  // Set moviesData when TMDB data is available, extracting only title and poster_path
+  // Set moviesData when TMDB data is available
   useEffect(() => {
     if (tmdbData && imdbIds.length > 0) {
       const movieDataById = {};

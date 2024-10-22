@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import MovieCard from "../components/MovieCard";
 import { useMovies } from "@/hooks/useMovies";
-import useLocalStorageState from "use-local-storage-state";
 import { useWatchlist } from "@/hooks/useWatchlist";
 
 // Styled components
@@ -40,16 +39,6 @@ const CenteredContainer = styled.div`
   max-width: 1200px;
   margin: auto;
   padding: 1rem;
-`;
-
-const WatchlistButton = styled.button`
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: ${(props) => (props.isInWatchlist ? "#ff6347" : "#4682b4")};
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
 `;
 
 export default function HomePage() {
@@ -95,7 +84,7 @@ export default function HomePage() {
               <MovieCard
                 key={`watchlist-${movie.imdbId}`}
                 movie={movie}
-                isInWatchlist={true} // Always true for watchlist items
+                isInWatchlist={true}
                 toggleWatchlist={() => toggleWatchlist(movie.imdbId)}
               />
             ))}
