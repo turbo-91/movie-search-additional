@@ -94,12 +94,14 @@ const StyledParagraph = styled.p`
 
 export default function HomePage() {
   const [input, setInput] = useState("");
-  const { moviesData, imdbIds, netzkinoError, loading } = useMovies(input);
+  const { moviesData, imdbIds, netzkinoError, tmdbError, loading } =
+    useMovies(input);
   const { watchlist, toggleWatchlist, inWatchlist } = useWatchlist(moviesData);
 
   // Render states
   if (loading) return <div>Loading data...</div>;
   if (netzkinoError) return <div>Error loading data!</div>;
+  if (tmdbError) return <div>Error loading data from TMDB!</div>;
 
   return (
     <CenteredContainer>
